@@ -2,7 +2,7 @@
 //  main.c
 // purpose: to interperte the language BF
 // Status: done
-
+// problem with this program: uses int instead of short for array. This is a problem as it uses more data than it needs to
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -170,6 +170,7 @@ int main(int argc, const char * argv[]) {
                 arraySize=1;
                 array = (int*)calloc(0, sizeof(int));
                 array[0] = 0;
+                index = 0;
             }
         }
         
@@ -478,7 +479,6 @@ void addSpaceToRight(int**array, int*arraySize){
 }
 
 int exeCommand(int*index, int*arraySize, int**array, short**commandList, int*commandSize, int*commandIndex){
-    
     //checking the command and exacuting
     switch ((*commandList)[*commandIndex]) {
         case 1:
@@ -508,10 +508,16 @@ int exeCommand(int*index, int*arraySize, int**array, short**commandList, int*com
         case 3:
             // +
             (*array)[*index]++;
+            if((*array)[*index] == 256){
+                (*array)[*index] = 0;
+            }
             break;
         case 4:
             // -
             (*array)[*index]--;
+            if((*array)[*index] == -1){
+                (*array)[*index] = 255;
+            }
             break;
         case 5:
             // .
@@ -543,18 +549,22 @@ int exeCommand(int*index, int*arraySize, int**array, short**commandList, int*com
 }
 
 int initLoop(int*index,int*arraySize, int**array, short**commandList, int*commandSize, int*commandIndex){
-    
+    // index is the current index
     //remember when the loop starts (the index)
-    int cmdStartID = *commandIndex+1;
+    int cmdStartID = *commandIndex + 1;
+    
     
     //execution phase
     while ((*array)[*index]){
         // while the current variable is not zero
         
         *commandIndex = cmdStartID; // go to start of loop
+        //printf("c: %d\n", (*commandList)[(*commandIndex)]);
+        //printf("i: %d\n", (*array)[*index]);
         
-        while ((*commandList)[(*commandIndex)] != 8) {
-            // while there is no ]
+        while ((*commandList)[(*commandIndex)] != 8 ) {
+            // will command index be on back of loop?
+            
             
             if(exeCommand(index, arraySize, array,commandList, commandSize, commandIndex)){
                 //return 1 if there is error with the next exeCommand
@@ -570,8 +580,8 @@ int initLoop(int*index,int*arraySize, int**array, short**commandList, int*comman
                 return 1;
             }
         }
-        
     }
+    
     return 0;
 }
 
